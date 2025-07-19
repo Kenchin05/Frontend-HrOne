@@ -3,15 +3,23 @@ import { SchemaRow } from './SchemaRow';
 import type { FormValues } from '@/types';
 import { Button } from '@/components/ui/button';
 
+type FieldPath =
+  | 'schema'
+  | `schema.${number}`
+  | `schema.${number}.type`
+  | `schema.${number}.keyName`
+  | `schema.${number}.children`;
+
 interface SchemaListProps {
   control: Control<FormValues>;
-  name: string; // Accept any string for compatibility
+  name: 'schema' | `schema.${number}.children`;
 }
 
 export const SchemaList = ({ control, name }: SchemaListProps) => {
+  // Only allow useFieldArray for 'schema' or 'schema.${number}.children'
   const { fields, append, remove } = useFieldArray({
     control,
-    name,
+    name: name as 'schema', // Only 'schema' is allowed at the top level
   });
 
   return (
@@ -21,8 +29,7 @@ export const SchemaList = ({ control, name }: SchemaListProps) => {
           key={field.id}
           control={control}
           remove={remove}
-          // Pass the full path to the current field
-          fieldPath={`${name}.${index}`} 
+          fieldPath={name === 'schema' ? `schema.${index}` : `${name}.${index}` as FieldPath}
           index={index}
         />
       ))}

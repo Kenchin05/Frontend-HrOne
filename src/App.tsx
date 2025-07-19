@@ -9,13 +9,13 @@ import { SchemaList } from './components/SchemaList';
  * @param fields The array of fields to transform.
  * @returns A key-value object representing the schema.
  */
-const transformSchemaToJSON = (fields: SchemaField[] | undefined): Record<string, any> => {
+const transformSchemaToJSON = (fields: SchemaField[] | undefined): Record<string, unknown> => {
   // If there are no fields, return an empty object
   if (!Array.isArray(fields)) {
     return {};
   }
 
-  const jsonObject: Record<string, any> = {};
+  const jsonObject: Record<string, unknown> = {};
 
   for (const field of fields) {
     // Skip any fields that don't have a key name yet

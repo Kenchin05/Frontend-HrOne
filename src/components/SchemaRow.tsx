@@ -7,10 +7,17 @@ import { Button } from '@/components/ui/button';
 import type { FormValues } from '@/types';
 import { SchemaList } from './SchemaList';
 
+type FieldPath =
+  | 'schema'
+  | `schema.${number}`
+  | `schema.${number}.type`
+  | `schema.${number}.keyName`
+  | `schema.${number}.children`;
+
 interface SchemaRowProps {
   control: Control<FormValues>;
   remove: UseFieldArrayRemove;
-  fieldPath: string; // Accept any string for compatibility
+  fieldPath: FieldPath;
   index: number;
 }
 
@@ -18,19 +25,19 @@ export const SchemaRow = ({ control, remove, fieldPath, index }: SchemaRowProps)
   // Watch the 'type' dropdown for this specific row
   const currentType = useWatch({
     control,
-    name: `${fieldPath}.type` as any,
+    name: `${fieldPath}.type` as FieldPath,
   });
 
   return (
     <Card className="mb-2 p-4 bg-white">
       <div className="flex items-center space-x-2">
         <Controller
-          name={`${fieldPath}.keyName`}
+          name={`${fieldPath}.keyName` as FieldPath}
           control={control}
           render={({ field }) => <Input placeholder="Field Name" {...field} value={typeof field.value === 'string' ? field.value : ''} />}
         />
         <Controller
-          name={`${fieldPath}.type`}
+          name={`${fieldPath}.type` as FieldPath}
           control={control}
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={typeof field.value === 'string' ? field.value : ''}>
@@ -52,7 +59,7 @@ export const SchemaRow = ({ control, remove, fieldPath, index }: SchemaRowProps)
       {/* --- RECURSIVE PART --- */}
       {currentType === 'Nested' && (
         <div className="mt-4">
-          <SchemaList control={control} name={`${fieldPath}.children`} />
+          <SchemaList control={control} name={`schema.${index}.children`} />
         </div>
       )}
     </Card>
