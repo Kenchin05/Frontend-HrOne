@@ -1,69 +1,97 @@
-# React + TypeScript + Vite
+# JSON Schema Builder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A dynamic, interactive, and user-friendly interface for building complex, nested JSON schemas in real-time. This project was built as a frontend hiring task for HROne.
 
-Currently, two official plugins are available:
+**[Live Demo](https://frontend-assignment-two-mu.vercel.app)** 
+##  Screenshot
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+_A screenshot of the final application with the side-by-side view and nested fields._
+![JSON Schema Builder Screenshot](/public/final-look.png) 
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+##  Features
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+This project not only fulfills all the core requirements of the task but also includes several enhancements to improve user experience.
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Core Requirements
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+* **Dynamic Field Management**: Users can add, edit, and delete fields at any level of the schema.
+* **Nested Objects**: Full support for creating deeply nested objects recursively. The UI clearly indents nested levels.
+* **Data Types**: Supports `String`, `Number`, and `Nested` data types.
+* **Live JSON Preview**: A side-by-side panel shows the generated JSON schema, which updates in real-time as the user makes changes.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Enhanced Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+* ** Drag-and-Drop Reordering**: Users can easily reorder fields at any level using a smooth drag-and-drop interface, powered by `dnd-kit` library.
+* ** Field Validation**: The "Field Name" input is validated to prevent empty submissions and ensure that all field names are unique within the same nesting level. Error messages are displayed clearly to the user.
+* **📋 Copy to Clipboard**: A convenient "Copy" button allows the user to copy the generated JSON to their clipboard.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+
+## 🛠️ Tech Stack
+
+* **Framework**: [React](https://react.dev/)
+* **Build Tool**: [Vite](https://vitejs.dev/)
+* **Language**: [TypeScript](https://www.typescriptlang.org/)
+* **UI Components**: [ShadCN/UI](https://ui.shadcn.com/) & [Tailwind CSS](https://tailwindcss.com/)
+* **State Management**: [React Hook Form](https://react-hook-form.com/)
+* **Drag & Drop**: [dnd-kit](https://dndkit.com/)
+* **Icons**: [Lucide React](https://lucide.dev/)
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Make sure you have [Node.js](https://nodejs.org/en) (v18 or later) installed on your system.
+
+### Installation & Setup
+
+1.  **Clone the repository:**
+    ```sh
+    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+    ```
+
+2.  **Navigate to the project directory:**
+    ```sh
+    cd your-repo-name
+    ```
+
+3.  **Install dependencies:**
+    ```sh
+    npm install
+    ```
+
+4.  **Run the development server:**
+    ```sh
+    npm run dev
+    ```
+    The application will be available at `http://localhost:5173`.
+
+5.  **Build for production:**
+    ```sh
+    npm run build
+    ```
+
+---
+
+## ⚙️ How It Works
+
+The application is built around a few core concepts to manage its complex state and recursive nature efficiently.
+
+### State Management with React Hook Form
+
+The entire state of the schema builder is managed by **React Hook Form**. The `useFieldArray` hook is the main component here, allowing for the dynamic creation, deletion, and reordering `move` of fields.
+
+### Recursive Component Structure
+
+The ability to handle infinite nesting is achieved through a recursive component design.
+* The `App` component renders the top-level `SchemaList`.
+* `SchemaList` uses `useFieldArray` to manage and render a list of `SchemaRow` components.
+* If a `SchemaRow`'s type is set to "Nested," it conditionally renders another `SchemaList` component for its children. This `SchemaList` -> `SchemaRow` -> `SchemaList` pattern allows the structure to repeat indefinitely.
+
+### JSON Transformation
+
+The data structure managed by React Hook Form is an array of objects optimized for the form state. A recursive `transformSchemaToJSON` function is used to convert this internal state into the clean, key-value JSON format displayed in the live preview panel and generated on submission.
