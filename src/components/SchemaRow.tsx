@@ -1,34 +1,34 @@
 import { Controller, useWatch } from 'react-hook-form';
-import type { Control, UseFieldArrayRemove, FieldArrayWithId } from 'react-hook-form'; // Import FieldArrayWithId
+import type { Control, UseFieldArrayRemove, FieldArrayWithId, Path } from 'react-hook-form';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import type { FormValues, SchemaField } from '@/types'; // Import SchemaField
+import type { FormValues } from '@/types';
 import { SchemaList } from './SchemaList';
 import { GripVertical } from 'lucide-react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-type FieldPath =
+
+export type FieldPath =
   | `schema.${number}`
-  | `schema.${number}.children.${number}`; // Simplified for clarity
+  | `schema.${number}.children`;
 
 interface SchemaRowProps {
   fieldId: string;
   control: Control<FormValues>;
   remove: UseFieldArrayRemove;
-  fieldPath: FieldPath;
+  fieldPath: string;
   index: number;
-  // Prop to pass sibling fields for uniqueness validation
   fields: FieldArrayWithId<FormValues, any, 'id'>[];
 }
 
 export const SchemaRow = ({ fieldId, control, remove, fieldPath, index, fields }: SchemaRowProps) => {
-  // Watch the 'type' dropdown for this specific row
+  // Watch the 'type' dropdown 
   const currentType = useWatch({
     control,
-    name: `${fieldPath}.type` as any,
+    name: `${fieldPath}.type`as Path<FormValues>,
   });
 
   const {
@@ -52,21 +52,20 @@ export const SchemaRow = ({ fieldId, control, remove, fieldPath, index, fields }
             <GripVertical size={18} className="text-gray-400" />
           </div>
           <Controller
-            name={`${fieldPath}.keyName`}
+            name={`${fieldPath}.keyName`as Path<FormValues>}
             control={control}
             rules={{
               required: 'Field name is required.',
               validate: {
                 unique: (value) => {
                   // Find if another field at this level has the same name
-                  const isDuplicate = fields.some(
+                  const isDuplicate = (fields as any[]).some(
                     (field, i) => i !== index && field.keyName === value
                   );
                   return isDuplicate ? 'Field name must be unique.' : true;
                 },
               },
             }}
-            // Destructure fieldState to get the error object
             render={({ field, fieldState: { error } }) => (
               <div className="flex-grow">
                 <Input
@@ -82,7 +81,7 @@ export const SchemaRow = ({ fieldId, control, remove, fieldPath, index, fields }
             )}
           />
           <Controller
-            name={`${fieldPath}.type`}
+            name={`${fieldPath}.type` as Path<FormValues>}
             control={control}
             render={({ field }) => (
               <Select onValueChange={field.onChange} value={typeof field.value === 'string' ? field.value : ''}>
@@ -103,8 +102,7 @@ export const SchemaRow = ({ fieldId, control, remove, fieldPath, index, fields }
         </div>
         {currentType === 'Nested' && (
           <div className="mt-4">
-            {/* Corrected the name prop to handle deep nesting */}
-            <SchemaList control={control} name={`${fieldPath}.children`} />
+            <SchemaList control={control} name={`${fieldPath}.children` as any} />
           </div>
         )}
       </Card>

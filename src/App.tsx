@@ -12,7 +12,7 @@ import { Copy } from 'lucide-react';
  * @returns A key-value object representing the schema.
  */
 const transformSchemaToJSON = (fields: SchemaField[] | undefined): Record<string, unknown> => {
-  // If there are no fields, return an empty object
+  
   if (!Array.isArray(fields)) {
     return {};
   }
@@ -26,10 +26,10 @@ const transformSchemaToJSON = (fields: SchemaField[] | undefined): Record<string
     }
 
     if (field.type === 'Nested') {
-      // If the field is nested, recursively call this function for its children
+      //recursively call this function for its children
       jsonObject[field.keyName] = transformSchemaToJSON(field.children);
     } else {
-      // Otherwise, set the key to the field's type (uppercased)
+      // Otherwise, set the key to the field's type 
       jsonObject[field.keyName] = field.type.toUpperCase();
     }
   }
@@ -54,7 +54,7 @@ function App() {
 
   const [isCopied, setIsCopied] = useState(false);
 
-  // The onFormSubmit handler now uses the new transformer function
+
   const onFormSubmit = (data: FormValues) => {
     const finalSchemaObject = transformSchemaToJSON(data.schema);
     console.log("Final Generated Schema:", JSON.stringify(finalSchemaObject, null, 2));
@@ -62,7 +62,7 @@ function App() {
 
   const watchedValues = watch();
 
-  // Transform the raw data in real-time for the preview
+  // Transform the raw data in real-time 
   const livePreviewJson = transformSchemaToJSON(watchedValues.schema);
   const jsonString = JSON.stringify(livePreviewJson, null, 2);
 
@@ -71,7 +71,7 @@ function App() {
       setIsCopied(true);
       setTimeout(() => {
         setIsCopied(false);
-      }, 2000); // Reset after 2 seconds
+      }, 2000); 
     });
   };
 
