@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import type { FormValues, SchemaField } from './types';
 import { SchemaList } from './components/SchemaList';
+import { Copy } from 'lucide-react';
 
 /**
  * Recursively transforms the schema array from react-hook-form
@@ -50,6 +52,8 @@ function App() {
     },
   });
 
+  const [isCopied, setIsCopied] = useState(false);
+
   // The onFormSubmit handler now uses the new transformer function
   const onFormSubmit = (data: FormValues) => {
     const finalSchemaObject = transformSchemaToJSON(data.schema);
@@ -60,6 +64,16 @@ function App() {
 
   // Transform the raw data in real-time for the preview
   const livePreviewJson = transformSchemaToJSON(watchedValues.schema);
+  const jsonString = JSON.stringify(livePreviewJson, null, 2);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(jsonString).then(() => {
+      setIsCopied(true);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000); // Reset after 2 seconds
+    });
+  };
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -75,11 +89,16 @@ function App() {
           </form>
         </div>
         <div className="w-full md:w-1/2">
-          <h2 className="text-lg font-semibold mb-2 border-b pb-2">Live JSON Preview</h2>
+          <div className="flex justify-between items-center mb-2 border-b pb-2">
+            <h2 className="text-lg font-semibold">Live JSON Preview</h2>
+            <Button variant="ghost" size="sm" onClick={handleCopy}>
+              <Copy size={16} className="mr-2" />
+              {isCopied ? 'Copied!' : 'Copy'}
+            </Button>
+          </div>
           <div className="bg-gray-900 text-white p-4 rounded-md mt-4 h-full sticky top-8">
             <pre>
-              {/* Use the transformed livePreviewJson object here */}
-              <code>{JSON.stringify(livePreviewJson, null, 2)}</code>
+              <code>{jsonString}</code>
             </pre>
           </div>
         </div>
